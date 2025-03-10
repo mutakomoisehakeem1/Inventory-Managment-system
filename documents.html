@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Medical Ltd - Documents</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="title">
+                    <h1>Elite Medical Ltd</h1>
+                    <h2>Document Management</h2>
+                </div>
+                <div class="user-info">
+                    <span id="userDisplay"></span>
+                    <button onclick="window.location.href='index.html'" class="back-btn">Back to Dashboard</button>
+                    <button onclick="logout()" class="logout-btn">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="documents-page">
+                <div class="documents-header">
+                    <h3>Uploaded Documents</h3>
+                    <label for="fileUpload" class="upload-btn">Upload New Document</label>
+                    <input type="file" id="fileUpload" style="display: none;" accept=".pdf,.doc,.docx,.xls,.xlsx" onchange="handleFileUpload(event)">
+                </div>
+                <div class="documents-filters">
+                    <input type="text" id="documentSearch" placeholder="Search documents..." onkeyup="filterDocuments()">
+                    <select id="documentTypeFilter" onchange="filterDocuments()">
+                        <option value="">All Types</option>
+                        <option value="pdf">PDF</option>
+                        <option value="doc">Word Documents</option>
+                        <option value="xls">Excel Files</option>
+                    </select>
+                </div>
+                <div id="documentsList" class="documents-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="documents.js"></script>
+</body>
+</html>

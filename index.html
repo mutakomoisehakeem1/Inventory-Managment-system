@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Medical Ltd - Inventory Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="title">
+                    <h1>Elite Medical Ltd</h1>
+                    <h2>Inventory Management System</h2>
+                </div>
+                <div class="user-info">
+                    <span id="userDisplay"></span>
+                    <button onclick="logout()" class="logout-btn">Logout</button>
+                </div>
+                <div class="menu-bar">
+                    <button onclick="toggleDropdown()">Menu</button>
+                    <div id="dropdown" class="dropdown-content">
+                        <button onclick="showGeneralReport()">General Report</button>
+                        <label for="fileUpload" class="upload-btn">Upload Document</label>
+                        <input type="file" id="fileUpload" style="display: none;" accept=".pdf,.doc,.docx,.xls,.xlsx" onchange="handleFileUpload(event)">
+                        <button onclick="window.location.href='documents.html'">View Documents</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Admin Only Section -->
+            <div id="adminSection" style="display: none;">
+                <div class="admin-panel">
+                    <h3>User Management</h3>
+                    <button onclick="showAddUserModal()" class="add-user-btn">Add New User</button>
+                    <div class="users-list">
+                        <h4>Current Users</h4>
+                        <div id="usersList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Add/Edit Item</h3>
+                <form id="itemForm">
+                    <div class="form-group">
+                        <label for="itemCode">Item Code/SKU:</label>
+                        <input type="text" id="itemCode" required placeholder="e.g., MIS-SCALPEL-001">
+                    </div>
+                    <div class="form-group">
+                        <label for="itemName">Item Name:</label>
+                        <input type="text" id="itemName" required placeholder="e.g., Laparoscopic Scalpel, 5mm">
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category:</label>
+                        <select id="category" required>
+                            <option value="">Select Category</option>
+                            <option value="Scalpels">Scalpels</option>
+                            <option value="Trocars">Trocars</option>
+                            <option value="Sutures">Sutures</option>
+                            <option value="Endoscopes">Endoscopes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="uom">Unit of Measure:</label>
+                        <select id="uom" required>
+                            <option value="">Select UOM</option>
+                            <option value="Each">Each</option>
+                            <option value="Box">Box</option>
+                            <option value="Pack">Pack</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="supplier">Supplier:</label>
+                        <input type="text" id="supplier" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reorderPoint">Reorder Point:</label>
+                        <input type="number" id="reorderPoint" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="leadTime">Lead Time (days):</label>
+                        <input type="number" id="leadTime" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location/Storage:</label>
+                        <input type="text" id="location" required placeholder="e.g., Shelf A, Room 2">
+                    </div>
+                    <div class="form-group">
+                        <label for="currentStock">Current Stock:</label>
+                        <input type="number" id="currentStock" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="pricePerUnit">Price Per Unit (RWF):</label>
+                        <input type="number" id="pricePerUnit" required min="0" step="0.01">
+                    </div>
+                    <button type="submit">Save Item</button>
+                </form>
+            </div>
+
+            <div class="inventory-section">
+                <h3>Inventory List</h3>
+                <div class="filter-section">
+                    <input type="text" id="searchInput" placeholder="Search items...">
+                    <select id="categoryFilter">
+                        <option value="">All Categories</option>
+                        <option value="Scalpels">Scalpels</option>
+                        <option value="Trocars">Trocars</option>
+                        <option value="Sutures">Sutures</option>
+                        <option value="Endoscopes">Endoscopes</option>
+                    </select>
+                </div>
+                <div class="table-container">
+                    <table id="inventoryTable">
+                        <thead>
+                            <tr>
+                                <th>Item Code</th>
+                                <th>Item Name</th>
+                                <th>Category</th>
+                                <th>Current Stock</th>
+                                <th>Price/Unit (RWF)</th>
+                                <th>Total Value (RWF)</th>
+                                <th>Reorder Point</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="reports-section">
+                <h3>Reports</h3>
+                <button onclick="generateLowStockReport()">Low Stock Report</button>
+                <button onclick="generateInventorySummary()">Inventory Summary</button>
+                <div id="reportOutput"></div>
+            </div>
+
+            <div id="documentsListSection" style="display: none;" class="documents-section">
+                <h3>Uploaded Documents</h3>
+                <div id="documentsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add New User</h2>
+            <form id="addUserForm">
+                <div class="form-group">
+                    <label for="newUserFullName">Full Name:</label>
+                    <input type="text" id="newUserFullName" required>
+                </div>
+                <div class="form-group">
+                    <label for="newUserEmail">Email:</label>
+                    <input type="email" id="newUserEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="newUserPassword">Password:</label>
+                    <input type="password" id="newUserPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="newUserRole">User Role:</label>
+                    <select id="newUserRole" required>
+                        <option value="">Select Role</option>
+                        <option value="regular">Regular User</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                    <small class="role-info">
+                        - Regular User: Can manage inventory only<br>
+                        - Administrator: Full access including user management
+                    </small>
+                </div>
+                <button type="submit">Add User</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
